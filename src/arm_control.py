@@ -13,8 +13,8 @@ from sensor_msgs.msg import JointState
 class ArmControl:
     def __init__(self):
         # Variables
-        self.port = rospy.get_param('/robotis_arm/port', '/dev/ttyUSB0')
-        self.baud = rospy.get_param('/robotis_arm/baud', 115200)
+        self.port = rospy.get_param('/turtlebot_arm/port', '/dev/ttyUSB0')
+        self.baud = rospy.get_param('/turtlebot_arm/baud', 115200)
         self.error = 0
         self.servo_count = 0
         self._mutex = thread.allocate_lock()
