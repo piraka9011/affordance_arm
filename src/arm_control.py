@@ -225,7 +225,6 @@ class ArmControl:
         speed_packet = []
         for servo_id in range(1, self.servo_count + 1):
             try:
-                js = JointState()
                 # Servo IDs are 1-indexed
                 goal_pos = msg.position[servo_id - 1]
                 goal_speed = self._vel2val(msg.velocity[servo_id - 1])
