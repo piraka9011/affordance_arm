@@ -18,7 +18,7 @@ class ArmControl:
         self.error = 0
         self.servo_count = 0
         self._mutex = thread.allocate_lock()
-        self._joint_names = ['joint_1', 'joint_2', 'joint_3', 'gripper']
+        self._joint_names = ['joint_1', 'joint_2', 'joint_3', 'joint_4' 'gripper']
         self._baud_codes = {1000000: 1,
                             500000: 3,
                             400000: 4,
@@ -117,22 +117,18 @@ class ArmControl:
         return None
 
     def execute(self, index, ins, params, ret=True):
-        """Send an instruction to the device.
-            Parameters
-            ----------
-            index : int
-                The ID of the servo to write.
-            ins : int
-                The instruction to send.
-            params : list
-                A list of the params to send.
-            ret : bool
-                Whether to read a return packet.
-            Returns
-            -------
-            packet : int
-                The return packet, if read.
-            """
+        """ Send an instruction to the device.
+            :param index: The ID of the servo to write.
+            :type index: int
+            :param ins: The instruction to send.
+            :type ins: int
+            :param params: A list of the params to send.
+            :type params: list
+            :param ret: Whether to read a return packet.
+            :type ret: bool
+            :return: The return packet, if read.
+            :rtype: int[], None
+        """
         values = None
         self._mutex.acquire()
         try:
@@ -222,19 +218,25 @@ class ArmControl:
     # ========================================= #
     def _position_cmd_cb(self, msg):
         position_packet = []
+        speed_packet = []
         for servo_id in range(1, self.servo_count + 1):
             try:
+                js = JointState()
                 # Servo IDs are 1-indexed
                 goal_pos = msg.position[servo_id - 1]
+                goal_speed = self._val2vel(msg.velocity[servo_id - 1])
                 # See syncWrite for format
-                servo_packet = [servo_id, int(goal_pos) % 256, int(goal_pos) >> 8]
-                position_packet.append(servo_packet)
+                pos_servo_packet = [servo_id, int(goal_pos) % 256, int(goal_pos) >> 8]
+                position_packet.append(pos_servo_packet)
+                speed_servo_packet = [servo_id, int(goal_speed) % 256, int(goal_speed) >> 8]
+                speed_packet.append(speed_servo_packet)
             except IndexError:
                 rospy.logwarn("Number of servo's connected ({}) does not equal number of"
                               "joints! Check definition of JointState Message\nJoint State Names: {}"
                               .format(self.servo_count, msg.name))
 
         # Write to multiple servos
+        self.syncWrite(P_GOAL_SPEED_L, speed_packet)
         self.syncWrite(P_GOAL_POSITION_L, position_packet)
 
     # ========================================== #

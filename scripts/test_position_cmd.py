@@ -11,7 +11,7 @@ if __name__ == '__main__':
 
     j = JointState()
     j.name = ['joint_1', 'joint_2', 'joint_3', 'gripper']
-    j.position = [512, 0, 0, 0]
+    j.position = [512, 128, 512, 512]
     j.header.stamp = rospy.Time().now()
     pub.publish(j)
     rospy.loginfo("Fin.")

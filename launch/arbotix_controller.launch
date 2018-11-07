@@ -5,5 +5,5 @@
     <param name="/turtlebot_arm/device_name" value="$(arg device_name)"/>
     <param name="/turtlebot_arm/baud_rate"   value="$(arg baud_rate)"/>
 
-    <node name="arm_control" pkg="robotis_arm" type="arm_control.py"/>
+    <node name="arm_control" pkg="robotis_arm" type="arm_control.py" output="screen"/>
 </launch>
