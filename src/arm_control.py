@@ -350,7 +350,7 @@ class ArmControl:
         except TypeError:
             return -1
 
-    def getServosCount(self, max_id=5, retry=3):
+    def getServosCount(self, max_id=8, retry=3):
         """ Get the number of servos connected.
             :param max_id: Maximum number of servos to look for.
             :param retry: Number of times to retry looking for servos.
