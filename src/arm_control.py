@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from math import ceil
 import serial
 import thread
 from threading import Thread
@@ -18,7 +19,7 @@ class ArmControl:
         self.error = 0
         self.servo_count = 0
         self._mutex = thread.allocate_lock()
-        self._joint_names = ['joint_1', 'joint_2', 'joint_3', 'joint_4' 'gripper']
+        self._joint_names = ['joint_1', 'joint_2', 'joint_3', 'joint_4', 'gripper']
         self._baud_codes = {1000000: 1,
                             500000: 3,
                             400000: 4,
@@ -213,6 +214,9 @@ class ArmControl:
     def _val2vel(self, value):
         return value / AX_VEL_VAL_RATIO
 
+    def _vel2val(self, velocity):
+        return ceil(velocity * AX_VEL_VAL_RATIO)
+
     # ========================================= #
     #           ROS Utility Functions           #
     # ========================================= #
@@ -224,7 +228,7 @@ class ArmControl:
                 js = JointState()
                 # Servo IDs are 1-indexed
                 goal_pos = msg.position[servo_id - 1]
-                goal_speed = self._val2vel(msg.velocity[servo_id - 1])
+                goal_speed = self._vel2val(msg.velocity[servo_id - 1])
                 # See syncWrite for format
                 pos_servo_packet = [servo_id, int(goal_pos) % 256, int(goal_pos) >> 8]
                 position_packet.append(pos_servo_packet)
